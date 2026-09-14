@@ -65,10 +65,13 @@ kind: Service
 metadata:
   name: cloud-data-api
   namespace: cloud-data
+  labels:
+    app: cloud-data-api
 spec:
   selector:
     app: cloud-data-api
   ports:
-    - port: 8000
+    - name: http
+      port: 8000
       targetPort: 8000
   type: ClusterIP
