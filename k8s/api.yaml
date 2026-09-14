@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cloud-data-api
+  namespace: cloud-data
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: cloud-data-api
+  template:
+    metadata:
+      labels:
+        app: cloud-data-api
+    spec:
+      containers:
+        - name: api
+          image: ghcr.io/fernegreiro/cloud-data-platform:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8000
+
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: cloud-data-db-secret
+                  key: DATABASE_URL
+
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 5
+
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 15
+            periodSeconds: 10
+
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cloud-data-api
+  namespace: cloud-data
+spec:
+  selector:
+    app: cloud-data-api
+  ports:
+    - port: 8000
+      targetPort: 8000
+  type: ClusterIP
