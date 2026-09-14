@@ -27,19 +27,29 @@ spec:
                   name: cloud-data-db-secret
                   key: DATABASE_URL
 
+          startupProbe:
+            httpGet:
+              path: /
+              port: 8000
+            periodSeconds: 5
+            timeoutSeconds: 5
+            failureThreshold: 30
+
           readinessProbe:
             httpGet:
               path: /health
               port: 8000
-            initialDelaySeconds: 5
             periodSeconds: 5
+            timeoutSeconds: 5
+            failureThreshold: 6
 
           livenessProbe:
             httpGet:
-              path: /health
+              path: /
               port: 8000
-            initialDelaySeconds: 15
             periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 6
 
           resources:
             requests:
