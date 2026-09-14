@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException
+from prometheus_fastapi_instrumentator import Instrumentator
 
 from backend.database import test_database_connection
 
@@ -6,6 +7,8 @@ app = FastAPI(
     title="Cloud Data Platform API",
     version="1.0.0"
 )
+
+Instrumentator().instrument(app).expose(app)
 
 
 @app.get("/")
